@@ -1,0 +1,25 @@
+{
+  "name": "weme-chat",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ndt-pro/weme-chat-nodejs.git"
+  },
+  "author": "NDTPRO",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ndt-pro/weme-chat-nodejs/issues"
+  },
+  "homepage": "https://github.com/ndt-pro/weme-chat-nodejs#readme",
+  "dependencies": {
+    "axios": "^0.20.0",
+    "ejs": "^3.1.5",
+    "express": "^4.17.1",
+    "socket.io": "^2.3.0"
+  }
+}
