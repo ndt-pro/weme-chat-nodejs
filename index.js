@@ -50,15 +50,27 @@ io.on("connection", (socket) => {
                     to_id: data.to_id,
                     content: data.content,
                     from: {
-                        avatar: user_receive.avatar,
-                        name: user_receive.fullName
+                        avatar: data.from.avatar,
+                        name: data.from.fullName
                     }
                 };
 
-                console.log(user_receive);
+                // console.log(user_receive);
                 io.to(user_receive.socket_id).emit(_KEY.SEND_MESSAGE, mess);
             }
         })
         .catch(err => console.error(err.response.status + ": " + err.response.statusText));
+    });
+    
+    socket.on("disconnect", () => {
+        // an disconnected
+        USERS.map(user => {
+            if(user.socket_id == socket.id) {
+                console.log("remove: " + user.fullName);
+            }
+        });
+
+        USERS = USERS.filter(user => user.socket_id != socket.id);
+        socket.broadcast.emit(_KEY.ON, USERS);
     });
 });
