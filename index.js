@@ -10,7 +10,8 @@ const _urlApi = "http://localhost:5000/api/";
 // key send
 const _KEY = {
     ON: '1',
-    SEND_MESSAGE: '2'
+    SEND_MESSAGE: '2',
+    SEE_MESSAGE: '3',
 };
 
 var USERS = [];
@@ -26,40 +27,40 @@ io.on("connection", (socket) => {
     });
 
     socket.on(_KEY.SEND_MESSAGE, (data) => {
-        let token = data.from.token;
-        let from_id = data.from.id;
+        let token = data.fromUser.token;
+
         let formData = {
-            fromUserId: from_id,
-            toUserId: Number(data.to_id),
+            toUserId: Number(data.toId),
             content: data.content,
+            media: data.media,
         };
-        console.log(formData);
+
+        // console.log(formData);
+
         axios.post(_urlApi + "Messages/send-message", formData, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
         })
         .then(res => {
-            console.log(res.data);
+            // console.log(res.data);
+
             // send message to socket user
-            let user_receive = USERS.filter(user => user.id == data.to_id)[0];
+            let user_receive = USERS.filter(user => user.id == data.toId)[0];
 
             if(user_receive) {
-                let mess = {
-                    from_id: from_id,
-                    to_id: data.to_id,
-                    content: data.content,
-                    from: {
-                        avatar: data.from.avatar,
-                        name: data.from.fullName
-                    }
-                };
-
-                // console.log(user_receive);
-                io.to(user_receive.socket_id).emit(_KEY.SEND_MESSAGE, mess);
+                io.to(user_receive.socket_id).emit(_KEY.SEND_MESSAGE, res.data);
             }
         })
         .catch(err => console.error(err.response.status + ": " + err.response.statusText));
+    });
+
+    socket.on(_KEY.SEE_MESSAGE, (data) => {
+        let user_receive = USERS.filter(user => user.id == data.toUserId)[0];
+
+        if(user_receive) {
+            io.to(user_receive.socket_id).emit(_KEY.SEE_MESSAGE, data.fromUserId);
+        }
     });
     
     socket.on("disconnect", () => {
